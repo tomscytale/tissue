@@ -4,7 +4,7 @@ PEP8 automated checker for nose. Based on coverage plugin
 import logging
 import sys
 
-import pep8
+import pycodestyle
 
 from nose import plugins
 from nose import util
@@ -27,10 +27,10 @@ def in_color(color, text):
                    for line in text.splitlines(True))
 
 
-class TissueReport(pep8.StandardReport):
+class TissueReport(pycodestyle.StandardReport):
     '''
-    pep8's Standard report with a get_file_results that accepts an optional
-    stream arg to output to.
+    pycodestyle's Standard report with a get_file_results that accepts an
+    optional stream arg to output to.
     '''
 
     def get_file_results(self, stream=sys.stdout):
@@ -86,13 +86,13 @@ class Tissue(plugins.Plugin):
     def beforeDirectory(self, path):
         def seen_runner(filename):
             if self.want_file(filename):
-                self.pep8.input_file(filename)
-        self.pep8.runner = seen_runner
-        self.pep8.input_dir(path)
+                self.pycodestyle.input_file(filename)
+        self.pycodestyle.runner = seen_runner
+        self.pycodestyle.input_dir(path)
 
     def beforeImport(self, filename, module):
         if filename.endswith('.py') and self.want_file(filename):
-            self.pep8.input_file(filename)
+            self.pycodestyle.input_file(filename)
 
     def configure(self, options, config):
         plugins.Plugin.configure(self, options, config)
@@ -126,9 +126,9 @@ class Tissue(plugins.Plugin):
         if options.tissue_show_pep8:
             arglist.append('--show-pep8')
 
-        options, paths = pep8.process_options(arglist)
-        self.pep8 = pep8.StyleGuide(**options.__dict__)
-        self.pep8.init_report(TissueReport)
+        options, paths = pycodestyle.process_options(arglist)
+        self.pycodestyle = pycodestyle.StyleGuide(**options.__dict__)
+        self.pycodestyle.init_report(TissueReport)
 
     def options(self, parser, env):
         plugins.Plugin.options(self, parser, env)
@@ -136,12 +136,12 @@ class Tissue(plugins.Plugin):
                           default=env.get('NOSE_TISSUE_PACKAGE'),
                           metavar='PACKAGE',
                           dest='tissue_packages',
-                          help='Restrict pep8 output to selected packages '
+                          help='Limit pycodestyle output to selected packages '
                                '[NOSE_TISSUE_PACKAGE]')
         parser.add_option('--tissue-inclusive', action='store_true',
                           default=env.get('NOSE_TISSUE_INCLUSIVE'),
                           help='Include all python files under working '
-                               'directory in pep8 run. '
+                               'directory in pycodestyle run. '
                                '[NOSE_TISSUE_INCLUSIVE]')
         parser.add_option('--tissue-repeat', action='store_true',
                           default=env.get('NOSE_TISSUE_REPEAT'),
@@ -181,7 +181,7 @@ class Tissue(plugins.Plugin):
                                '[NOSE_TISSUE_COLOR]')
 
     def report(self, stream):
-        report = self.pep8.check_files()
+        report = self.pycodestyle.check_files()
         stream.write('\n' + 'PEP8:' + '\n')
         report.get_file_results(stream)
         if self.tissue_statistics:

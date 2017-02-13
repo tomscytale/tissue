@@ -1,6 +1,6 @@
 from setuptools import setup
 
-version = '0.9.2'
+version = '0.10.0'
 
 setup(
     name='tissue',
@@ -16,7 +16,7 @@ setup(
     py_modules=['tissue'],
     install_requires=[
         'nose',
-        'pep8',
+        'pycodestyle',
     ],
     entry_points={
         'nose.plugins': [
